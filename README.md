@@ -1,15 +1,6 @@
 # Hotel reservation backend
 
-# Project environment variables
-```
-HTTP_LISTEN_ADDRESS=:3000
-JWT_SECRET=somethingsupersecretthatNOBODYKNOWS
-MONGO_DB_NAME=hotel-reservation
-MONGO_DB_URL=mongodb://localhost:27017
-MONGO_DB_URL_TEST=mongodb://localhost:27017
-```
-
-#go get -u github.com/gofiber/fiber/v2# Project outline
+# Project outline
 - users -> book room from an hotel 
 - admins -> going to check reservation/bookings 
 - Authentication and authorization -> JWT tokens
@@ -41,4 +32,3 @@ go get github.com/gofiber/fiber/v2
 ### Installing mongodb as a Docker container
 ```bash
 docker run --name mongodb -d mongo:latest -p 27017:27017
-```
