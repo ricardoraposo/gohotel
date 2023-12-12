@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/ricardoraposo/gohotel/data"
 	"go.mongodb.org/mongo-driver/bson"
@@ -11,8 +12,14 @@ import (
 
 const userColl = "users"
 
+type Dropper interface {
+	Drop(context.Context) error
+}
+
 type UserStore interface {
+	Dropper
 	GetUserById(context.Context, string) (*data.User, error)
+	GetUserByEmail(context.Context, string) (*data.User, error)
 	GetUsers(context.Context) ([]*data.User, error)
 	InsertUser(context.Context, *data.User) (*data.User, error)
 	DeleteUser(context.Context, string) error
@@ -31,6 +38,11 @@ func NewMongoUserStore(client *mongo.Client) *MongoUserStore {
 	}
 }
 
+func (s *MongoUserStore) Drop(ctx context.Context) error {
+	fmt.Println("--- Dropping user collection ---")
+	return s.coll.Drop(ctx)
+}
+
 func (s *MongoUserStore) GetUsers(ctx context.Context) ([]*data.User, error) {
 	cur, err := s.coll.Find(ctx, bson.M{})
 	if err != nil {
@@ -42,6 +54,14 @@ func (s *MongoUserStore) GetUsers(ctx context.Context) ([]*data.User, error) {
 		return nil, err
 	}
 	return users, nil
+}
+
+func (s *MongoUserStore) GetUserByEmail(ctx context.Context, email string) (*data.User, error) {
+	var user data.User
+	if err := s.coll.FindOne(ctx, bson.M{"email": email}).Decode(&user); err != nil {
+		return nil, err
+	}
+	return &user, nil
 }
 
 func (s *MongoUserStore) GetUserById(ctx context.Context, id string) (*data.User, error) {
@@ -67,12 +87,8 @@ func (s *MongoUserStore) InsertUser(ctx context.Context, user *data.User) (*data
 }
 
 func (s *MongoUserStore) UpdateUser(ctx context.Context, id string, params data.UpdateUserRequest) error {
-    values := params.ToBson()
-	update := bson.D{
-		{
-			"$set", values,
-		},
-	}
+	values := params.ToBson()
+    update := bson.D{{"$set", values}}
 
 	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {

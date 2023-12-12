@@ -19,6 +19,14 @@ func NewUserHandler(userStore db.UserStore) *UserHandler {
 	}
 }
 
+func (h *UserHandler) GetUsers(c *fiber.Ctx) error {
+	users, err := h.userStore.GetUsers(c.Context())
+	if err != nil {
+		return err
+	}
+	return c.JSON(users)
+}
+
 func (h *UserHandler) GetUser(c *fiber.Ctx) error {
 	id := c.Params("id")
 	user, err := h.userStore.GetUserById(c.Context(), id)
@@ -70,12 +78,4 @@ func (h *UserHandler) PostUser(c *fiber.Ctx) error {
 		return err
 	}
 	return c.JSON(createdUser)
-}
-
-func (h *UserHandler) GetUsers(c *fiber.Ctx) error {
-	users, err := h.userStore.GetUsers(c.Context())
-	if err != nil {
-		return err
-	}
-	return c.JSON(users)
 }
