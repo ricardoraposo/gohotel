@@ -1,22 +1,14 @@
 package main
 
 import (
-	"context"
-	"log"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/ricardoraposo/gohotel/db"
 	"github.com/ricardoraposo/gohotel/handlers"
 	"github.com/ricardoraposo/gohotel/middleware"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func main() {
-	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(db.DBURI))
-	if err != nil {
-		log.Fatal(err)
-	}
+	client := db.NewMongoClient()
 
 	userStore := db.NewMongoUserStore(client)
 	hotelStore := db.NewMongoHotelStore(client)
@@ -35,8 +27,8 @@ func main() {
 	auth := app.Group("/auth")
 	api := app.Group("/api", middleware.JWTAuth)
 
-    // auth
-    auth.Post("/", authHandler.Authenticate)
+	// auth
+	auth.Post("/", authHandler.Authenticate)
 
 	// userRoutes
 	api.Get("/user", userHandler.GetUsers)
