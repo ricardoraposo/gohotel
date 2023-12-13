@@ -15,15 +15,16 @@ const (
 )
 
 type Store struct {
-	User  UserStore
-	Hotel HotelStore
-	Room  RoomStore
+	User    UserStore
+	Hotel   HotelStore
+	Room    RoomStore
+	Booking BookingStore
 }
 
 func NewMongoClient() *mongo.Client {
 	client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(DBURI))
 	if err != nil {
-        log.Fatal(err)
+		log.Fatal(err)
 	}
 
 	return client
