@@ -88,7 +88,7 @@ func (s *MongoUserStore) InsertUser(ctx context.Context, user *data.User) (*data
 
 func (s *MongoUserStore) UpdateUser(ctx context.Context, id string, params data.UpdateUserRequest) error {
 	values := params.ToBson()
-    update := bson.D{{"$set", values}}
+    update := bson.D{{Key: "$set", Value: values}}
 
 	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {

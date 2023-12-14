@@ -24,12 +24,12 @@ type UpdateUserRequest struct {
 func (r UpdateUserRequest) ToBson() bson.M {
 	m := bson.M{}
 	if len(r.FirstName) > 0 {
-        m["firstName"] = r.FirstName
+		m["firstName"] = r.FirstName
 	}
 	if len(r.LastName) > 0 {
-        m["lastName"] = r.LastName
+		m["lastName"] = r.LastName
 	}
-    return m
+	return m
 }
 
 type CreateUserRequest struct {
@@ -51,7 +51,7 @@ func (r CreateUserRequest) Validate() map[string]string {
 		errors["password"] = fmt.Sprintf("Password should have more than %d characters", minPasswordLen)
 	}
 	if !utils.IsValidEmail(r.Email) {
-		errors["email"] = fmt.Sprintf("Email is not a valid one")
+		errors["email"] = fmt.Sprintf("Email %s is not valid", r.Email)
 	}
 	return nil
 }
@@ -62,6 +62,7 @@ type User struct {
 	LastName          string             `bson:"lastName" json:"lastName"`
 	Email             string             `bson:"email" json:"email"`
 	EncryptedPassowrd string             `bson:"encryptedPassowrd" json:"-"`
+	IsAdmin           bool               `bson:"isAdmin" json:"isAdmin"`
 }
 
 func NewUserFromRequest(r CreateUserRequest) (*User, error) {
